@@ -6,6 +6,7 @@ import (
 	"os"
 	"sort"
 	"strings"
+	"text/tabwriter"
 
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/spf13/cobra"
@@ -14,8 +15,9 @@ import (
 // var verbose bool
 
 var rootCmd = &cobra.Command{
-	Use:   "openpaths",
-	Short: "A CLI tool to extract and display endpoints from an OpenAPI specification",
+	Use:     "openpaths",
+	Version: "1.0.0",
+	Short:   "A CLI tool to extract and display endpoints from an OpenAPI specification",
 	Long: `openpaths is a Go-based CLI application that parses OpenAPI (Swagger) specifications
 written in YAML or JSON and lists API endpoints (paths and HTTP methods) in a readable format.
 
@@ -34,15 +36,8 @@ and generating test cases. Support for resolving external $ref references is als
 		soated := sortPath(doc.Paths)
 
 		// print paths
-		for _, path := range soated {
-			item := paths[path]
-			methods := getAvailableMethods(item)
-			for _, method := range methods {
-				fmt.Printf("%-6s %s\n", strings.ToUpper(method), path)
-			}
-		}
+		printer(paths, soated)
 	},
-	Version: "1.0.0",
 }
 
 // load OpenApi specification from file
@@ -98,8 +93,18 @@ func getAvailableMethods(item *openapi3.PathItem) []string {
 	return methods
 }
 
-// Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
+func printer(paths map[string]*openapi3.PathItem, soated []string) {
+	w := tabwriter.NewWriter(os.Stdout, 0, 0, 2, ' ', 0)
+	for _, path := range soated {
+		item := paths[path]
+		methods := getAvailableMethods(item)
+		for _, method := range methods {
+			fmt.Printf("%s\t%s\n", strings.ToUpper(method), path)
+		}
+	}
+	w.Flush()
+}
+
 func Execute() {
 	err := rootCmd.Execute()
 	if err != nil {
