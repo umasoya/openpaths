@@ -21,6 +21,7 @@ written in YAML or JSON and lists API endpoints (paths and HTTP methods) in a re
 
 It is useful for API documentation auditing, routing inspection, static analysis,
 and generating test cases. Support for resolving external $ref references is also planned.`,
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) == 0 {
 			cmd.Help()
