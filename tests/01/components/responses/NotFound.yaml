@@ -1,0 +1,9 @@
+description: The specified resource could not be found.
+content:
+  application/json:
+    schema:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Resource not found"
